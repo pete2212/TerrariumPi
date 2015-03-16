@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <script type="text/javascript"
+                src="https://www.google.com/jsapi?autoload={
+                    'modules':[{
+                    'name':'visualization',
+                    'version':'1',
+                    'packages':['corechart']
+                     }]
+                }">
+        </script>
+
+        <script type="text/javascript">
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Time', 'Humidity', 'Temperature'],
+                {% for item in data %}
+                    ['{{ item.time }}', {{ item.humidity }}, {{item.temp }}],
+                {% endfor %}
+            ]);
+
+            var options = {
+                title: 'Temp/Humidity over time',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+                };
+
+            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);
+            }
+        </script>
+        <title>{{ title }}</title> 
+    </head>
+
+    <body>
+        <h1>Terrarium Temperatures from last started monitor session</h1>
+        <div id="curve_chart" style="width: 1200px; height: 600px"></div>
+    </body>
+</html>

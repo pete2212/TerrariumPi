@@ -46,6 +46,22 @@ class MonitorTime(object):
             return True
         return False
 
+class QueryDb(object):
+    @classmethod
+    def get_recent(cls, time_start=None):
+        '''Gets the most recent data from last monitor timestamp until now
+        '''
+        q = session.query(MonitorTime)
+        q = q.filter(MonitorTime.action == 'Start')
+        q = q.order_by(MonitorTime.time.desc())
+        q = q.limit(1)
+        return q.all()
+
+    @classmethod
+    def get_values(cls, time):
+        q = session.query(Temp).filter(Temp.time.between(time, datetime.datetime.now()))
+        return q.all()
+
 temperature_schema = 'temperature'
 engine = create_engine('postgresql://pi:raspberry@localhost/monitor')
 metadata = MetaData(engine)

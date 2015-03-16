@@ -42,12 +42,12 @@ class Monitor(object):
             while(1):
                 sleep(2)
                 temp, humidity = cls.get_value()
-                if temp != 0 and humidity != 0:
+                if temp != None and humidity != None:
                     db_conn.add_value(temp, humidity)
                 else:
                     db_conn.add_value(0,0)
         except TypeError as e:
-            print 'Type error caught({0}): {1}'.format(e.errno, e)
+            print 'Type error caught({0})'.format(e)
         except Exception as inst:
             print 'Unexpected error: %s: %s' % (type(inst), inst)
         finally:
