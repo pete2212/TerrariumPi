@@ -24,7 +24,13 @@ class Monitor(object):
         while not started:
             sleep(2)
             temp, humidity = cls.get_value()
-            started = MonitorTime.add_value('Start', temp, humidity)
+            print 'initial values: temp %s - humidity  %s' % (temp, humidity)
+            if temp and humidity:
+                started = MonitorTime.add_value('Start', temp, humidity)
+                if started:
+                    print 'initial values: temp %s - humidity  %s' % (temp, humidity)
+                else:
+                    print 'not started'
 
     @classmethod
     def poll_monitor(cls):
@@ -36,9 +42,14 @@ class Monitor(object):
             while(1):
                 sleep(2)
                 temp, humidity = cls.get_value()
-                db_conn.add_value(temp, humidity)
-        except:
-            print 'Unexpected error:', sys.exc_info()[0]
+                if temp != 0 and humidity != 0:
+                    db_conn.add_value(temp, humidity)
+                else:
+                    db_conn.add_value(0,0)
+        except TypeError as e:
+            print 'Type error caught({0}): {1}'.format(e.errno, e)
+        except Exception as inst:
+            print 'Unexpected error: %s: %s' % (type(inst), inst)
         finally:
             print 'shutting down monitor and cleaning up'
             tdb_conn = MonitorTime()
