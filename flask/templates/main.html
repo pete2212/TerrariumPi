@@ -16,7 +16,7 @@
             var data = google.visualization.arrayToDataTable([
                 ['Time', 'Humidity', 'Temperature'],
                 {% for item in data %}
-                    ['{{ item.time }}', {{ item.humidity }}, {{item.temp }}],
+                    ['{{ item.time | datetimefilter }}', {{ item.humidity | round(2)}}, {{item.temp | round(2)}}],
                 {% endfor %}
             ]);
 

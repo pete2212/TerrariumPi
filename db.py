@@ -60,6 +60,7 @@ class QueryDb(object):
     @classmethod
     def get_values(cls, time):
         q = session.query(Temp).filter(Temp.time.between(time, datetime.datetime.now()))
+        q = q.limit(150)
         return q.all()
 
 temperature_schema = 'temperature'
