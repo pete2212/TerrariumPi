@@ -36,9 +36,9 @@ class Monitor(object):
     def poll_monitor(cls):
         temp = 0
         humidity = 0
+        db_conn = Temp()
+        cls.start_monitor()
         try:
-            db_conn = Temp()
-            cls.start_monitor()
             while(1):
                 sleep(2)
                 temp, humidity = cls.get_value()
