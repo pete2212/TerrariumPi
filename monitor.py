@@ -7,8 +7,10 @@ class Monitor(object):
     @classmethod
     def run_monitor(cls):
         h, t = dht.read_retry(dht.DHT22, 4)
-        temp = (t*9/5) + 32
-        return temp, h
+        if h and t:
+            temp = (t*9/5) + 32
+            return temp, h
+        return False, False
 
     @classmethod
     def get_value(cls):
@@ -21,33 +23,44 @@ class Monitor(object):
         #2 second init time for dht22
         print 'starting monitor'
         started = False
-        while not started:
+        counter = 0
+        while not started and counter < 10:
             sleep(2)
             temp, humidity = cls.get_value()
-            print 'initial values: temp %s - humidity  %s' % (temp, humidity)
             if temp and humidity:
                 started = MonitorTime.add_value('Start', temp, humidity)
                 if started:
                     print 'initial values: temp %s - humidity  %s' % (temp, humidity)
                 else:
                     print 'not started'
+            else:
+                print 'Bad data returned from sensor.\nError count: %s' % counter
+                counter += 1
+        return started
 
     @classmethod
     def poll_monitor(cls):
+        fail_counter = 0
         temp = 0
         humidity = 0
         db_conn = Temp()
-        cls.start_monitor()
         try:
-            while(1):
+            good_data = cls.start_monitor()
+            while(good_data or fail_counter < 10):
                 sleep(2)
                 temp, humidity = cls.get_value()
                 if temp != None and humidity != None:
                     db_conn.add_value(temp, humidity)
                 else:
-                    db_conn.add_value(0,0)
+                    fail_counter += 1
+            if fail_counter >= 10:
+                raise ValueError("Failed to retrieve data for %s seconds" % (fail_counter * 2))
         except TypeError as e:
             print 'Type error caught({0})'.format(e)
+        except KeyboardInterrupt:
+            print 'User terminated monitor'
+        except ValueError:
+            print 'A critical error was encountered, exiting monitor'
         except Exception as inst:
             print 'Unexpected error: %s: %s' % (type(inst), inst)
         finally:
