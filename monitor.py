@@ -1,7 +1,7 @@
 import Adafruit_DHT as dht
-import sys
 from time import sleep
 from db import Temp, MonitorTime
+
 
 class Monitor(object):
     @classmethod
@@ -19,8 +19,8 @@ class Monitor(object):
 
     @classmethod
     def start_monitor(cls):
-        #TODO put in
-        #2 second init time for dht22
+        # TODO put in
+        # 2 second init time for dht22
         print 'starting monitor'
         started = False
         counter = 0
@@ -30,11 +30,13 @@ class Monitor(object):
             if temp and humidity:
                 started = MonitorTime.add_value('Start', temp, humidity)
                 if started:
-                    print 'initial values: temp %s - humidity  %s' % (temp, humidity)
+                    print ('initial values: temp %s - humidity  %s' %
+                           (temp, humidity))
                 else:
                     print 'not started'
             else:
-                print 'Bad data returned from sensor.\nError count: %s' % counter
+                print ('Bad data returned from sensor.\nError count: %s'
+                       % counter)
                 counter += 1
         return started
 
@@ -49,12 +51,13 @@ class Monitor(object):
             while(good_data or fail_counter < 10):
                 sleep(2)
                 temp, humidity = cls.get_value()
-                if temp != None and humidity != None:
+                if temp is not None and humidity is not None:
                     db_conn.add_value(temp, humidity)
                 else:
                     fail_counter += 1
             if fail_counter >= 10:
-                raise ValueError("Failed to retrieve data for %s seconds" % (fail_counter * 2))
+                raise ValueError("Failed to retrieve data for %s seconds" %
+                                 (fail_counter * 2))
         except TypeError as e:
             print 'Type error caught({0})'.format(e)
         except KeyboardInterrupt:
