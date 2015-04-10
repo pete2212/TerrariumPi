@@ -1,6 +1,8 @@
 import wiringpi2 as wiringpi
 from optparse import OptionParser
 
+#wiringpi.digitalWrite(27, 0)  # 0 = on, 1 = off, 27 = filter, 22 = light uva 6 = uvb
+
 
 def init_gpio():
     # Define basic init so we can override later if needed
@@ -26,21 +28,3 @@ if not options.pin or not options.action:
 pins = options.pin.split(',')
 init_gpio()
 do_gpio_action(pins, options.action)
-
-
-'''
-wiringpi.wiringPiSetupGpio()
-wiringpi.pinMode(27, 1)
-wiringpi.pinMode(22, 1)
-wiringpi.pinMode(5, 0)
-wiringpi.pinMode(6, 1)
-wiringpi.pinMode(13, 0)
-wiringpi.pinMode(19, 0)
-wiringpi.pinMode(26, 0)
-
-wiringpi.digitalWrite(6, 1)
-wiringpi.digitalWrite(27, 1)
-wiringpi.digitalWrite(22, 1)
-# sleep(10)
-#wiringpi.digitalWrite(27, 0)  # 0 = on, 1 = off, 27 = filter, 22 = light uva 6 = uvb
-#wiringpi.digitalWrite(22, 0)'''
